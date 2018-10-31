@@ -20,7 +20,7 @@ class ImageDetector:
         rospy.init_node("darknet_detector")
         darknet.load()
         self.bridge = CvBridge()
-        rospy.Subscriber("rgb/camera_info", Image, self.image_received)
+        rospy.Subscriber("rgb/image_raw", Image, self.image_received)
         self.pub = rospy.Publisher('darknet/detector', Object, queue_size=1)
         # if ENABLE_TESTS: self.image_received(self.bridge.cv2_to_imgmsg(cv2.imread('/home/nicolas/Documents/TP Vision/Darknet/darknet/data/dog.jpg'), "bgr8"))
 
