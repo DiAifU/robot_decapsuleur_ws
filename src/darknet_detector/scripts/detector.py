@@ -47,4 +47,4 @@ class ImageDetector:
 
 if __name__ == "__main__":
     ImageDetector()
-    # rospy.spin()
+    rospy.spin()

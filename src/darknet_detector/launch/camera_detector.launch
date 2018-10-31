@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="openni_camera" name="openni" type="openni_node" />
+  <node pkg="darknet_detector" name="darknet" type="detector.py" cwd="node" />
+</launch>
