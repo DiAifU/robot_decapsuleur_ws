@@ -170,3 +170,18 @@ def get_first_object(image):
         x2 = int(obj[2][0] + w/2)
         y2 = int(obj[2][1] + h/2)
         return [name, proba, (x1, y1), (x2, y2)]
+
+def get_object(image, type):
+    objs_detecte = detect(net, meta, image)
+    for obj in objs_detecte:
+        name = obj[0]
+        if name == type:
+            proba = obj[1]
+            w = int(obj[2][2])
+            h = int(obj[2][3])
+
+            x1 = int(obj[2][0] - w/2)
+            y1 = int(obj[2][1] - h/2)
+            x2 = int(obj[2][0] + w/2)
+            y2 = int(obj[2][1] + h/2)
+            return [name, proba, (x1, y1), (x2, y2)]

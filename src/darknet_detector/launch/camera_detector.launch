@@ -1,4 +1,6 @@
 <launch>
+  <arg name="type" default="all" />
+
   <node pkg="openni_camera" name="openni" type="openni_node" />
-  <node pkg="darknet_detector" name="darknet" type="detector.py" cwd="node" />
+  <node pkg="darknet_detector" name="darknet" type="detector.py" args="$(arg type)" cwd="node" />
 </launch>

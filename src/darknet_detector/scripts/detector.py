@@ -10,40 +10,40 @@ sys.path.insert(0, darknet_path)
 import darknet
 from cv_bridge import CvBridge, CvBridgeError
 
-# ENABLE_TESTS=1
-# if ENABLE_TESTS: import cv2
-
-
 
 class ImageDetector:
     def __init__(self):
         rospy.init_node("darknet_detector")
         darknet.load()
         self.bridge = CvBridge()
-        rospy.Subscriber("rgb/image_raw", Image, self.image_received)
+        if sys.argv[1] == "all":
+            fct = self.get_first_object
+        else:
+            fct = self.get_specific_object
+        rospy.Subscriber("rgb/image_raw", Image, fct)
         self.pub = rospy.Publisher('darknet/detector', Object, queue_size=1)
-        # if ENABLE_TESTS: self.image_received(self.bridge.cv2_to_imgmsg(cv2.imread('/home/nicolas/Documents/TP Vision/Darknet/darknet/data/dog.jpg'), "bgr8"))
 
-    def image_received(self, image):
+    def publish_obj(self, obj_infos):
+        obj = Object()
+        obj.name = obj_infos[0]
+        obj.proba = obj_infos[1]
+        obj.x1 = obj_infos[2][0]
+        obj.y1 = obj_infos[2][1]
+        obj.x2 = obj_infos[3][0]
+        obj.y2 = obj_infos[3][1]
+        self.pub.publish(obj)
+
+    def get_first_object(self, image):
         cv_image = self.bridge.imgmsg_to_cv2(image, "bgr8")
         obj_infos = darknet.get_first_object(cv_image)
+        if obj_infos: self.publish_obj(obj_infos)
 
-        # if ENABLE_TESTS:
-        #     print(obj_infos)
-        #     while True:
-        #         cv2.imshow("Image window", cv_image)
-        #         if cv2.waitKey(0) & 0xFF == ord('q'):
-        #             break
 
-        if obj_infos:
-            obj = Object()
-            obj.name = obj_infos[0]
-            obj.proba = obj_infos[1]
-            obj.x1 = obj_infos[2][0]
-            obj.y1 = obj_infos[2][1]
-            obj.x2 = obj_infos[3][0]
-            obj.y2 = obj_infos[3][1]
-            self.pub.publish(obj)
+    def get_specific_object(self, image):
+        cv_image = self.bridge.imgmsg_to_cv2(image, "bgr8")
+        obj_infos = darknet.get_object(cv_image, sys.argv[1])
+        if obj_infos: self.publish_obj(obj_infos)
+
 
 if __name__ == "__main__":
     ImageDetector()
