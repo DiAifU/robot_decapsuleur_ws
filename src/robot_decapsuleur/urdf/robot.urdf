@@ -1,0 +1,52 @@
+<robot name="my_robot">
+	<link name="base">
+		<visual>
+		  <geometry>
+			<box size="2 2 2"/>
+		  </geometry>
+		  <origin rpy="0 0 0" xyz="0 0 1"/>
+		</visual>
+	</link>
+	<link name="rotatif">
+		<visual>
+		  <geometry>
+			<box size="0.5 0.5 3"/>
+		  </geometry>
+		  <origin rpy="0 0 0" xyz="0 0 1.5"/>
+		</visual>
+	</link>
+	<link name="arriere_bras">
+		<visual>
+		  <geometry>
+			<box size="0.5 0.5 3"/>
+		  </geometry>
+		  <origin rpy="0 0 0" xyz="0 0 1.5"/>
+		</visual>
+	</link>
+	<link name="avant_bras">
+		<visual>
+		  <geometry>
+			<box size="0.5 0.5 3"/>
+		  </geometry>
+		  <origin rpy="0 0 0" xyz="0 0 1.5"/>
+		</visual>
+	</link>
+	<joint name="joint0" type="continuous">
+		<parent link="base"/>
+		<child link="rotatif"/>
+		<origin rpy="0 0 0" xyz="0 0 2"/>
+		<axis xyz="0 0 1" />
+	</joint>
+	<joint name="joint1" type="continuous">
+		<parent link="rotatif"/>
+		<child link="arriere_bras"/>
+		<origin rpy="0 0 0" xyz="0 0 3"/>
+		<axis xyz="1 0 0" />
+	</joint>
+	<joint name="joint2" type="continuous">
+		<parent link="arriere_bras"/>
+		<child link="avant_bras"/>
+		<origin rpy="0 0 0" xyz="0 0 3"/>
+		<axis xyz="1 0 0" />
+	</joint>
+</robot>
