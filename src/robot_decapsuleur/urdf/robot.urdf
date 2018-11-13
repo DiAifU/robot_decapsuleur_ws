@@ -1,52 +1,79 @@
 <robot name="my_robot">
 	<link name="base">
 		<visual>
-		  <geometry>
-			<box size="2 2 2"/>
-		  </geometry>
-		  <origin rpy="0 0 0" xyz="0 0 1"/>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur/stl/base_plate-1.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+		  <origin rpy="0 0 0" xyz="-0.6 -0.6 0"/>
 		</visual>
 	</link>
-	<link name="rotatif">
+	<link name="base2">
 		<visual>
-		  <geometry>
-			<box size="0.5 0.5 3"/>
-		  </geometry>
-		  <origin rpy="0 0 0" xyz="0 0 1.5"/>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur/stl/base_plate-2.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="-0.45 -0.45 0"/>
 		</visual>
 	</link>
-	<link name="arriere_bras">
+	<link name="dyna1">
 		<visual>
-		  <geometry>
-			<box size="0.5 0.5 3"/>
-		  </geometry>
-		  <origin rpy="0 0 0" xyz="0 0 1.5"/>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 0 -1.5708" xyz="0 0 0"/>
 		</visual>
 	</link>
-	<link name="avant_bras">
+	<link name="rot">
 		<visual>
-		  <geometry>
-			<box size="0.5 0.5 3"/>
-		  </geometry>
-		  <origin rpy="0 0 0" xyz="0 0 1.5"/>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur/stl/Rotating_plate.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 0 0.1" xyz="-0.4 -0.5 0"/>
 		</visual>
 	</link>
-	<joint name="joint0" type="continuous">
+	<link name="dyna2">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="1.5708 0 -1.5708" xyz="0.008 0.175 0.205"/>
+		</visual>
+	</link>
+	<link name="arm1">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur/stl/arm.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="1.5708 -1.5708 0" xyz="0 0 0"/>
+		</visual>
+	</link>
+
+
+
+	<joint name="joint0" type="fixed">
 		<parent link="base"/>
-		<child link="rotatif"/>
-		<origin rpy="0 0 0" xyz="0 0 2"/>
-		<axis xyz="0 0 1" />
+		<child link="base2"/>
+		<origin rpy="0 0 0" xyz="0 0 0.63"/>
 	</joint>
-	<joint name="joint1" type="continuous">
-		<parent link="rotatif"/>
-		<child link="arriere_bras"/>
-		<origin rpy="0 0 0" xyz="0 0 3"/>
-		<axis xyz="1 0 0" />
+	<joint name="joint1" type="fixed">
+		<parent link="base2"/>
+		<child link="dyna1"/>
+		<origin rpy="0 0 0" xyz="0 0 -0.15"/>
 	</joint>
 	<joint name="joint2" type="continuous">
-		<parent link="arriere_bras"/>
-		<child link="avant_bras"/>
-		<origin rpy="0 0 0" xyz="0 0 3"/>
-		<axis xyz="1 0 0" />
+		<parent link="dyna1"/>
+		<child link="rot"/>
+		<origin rpy="0 0 0" xyz="0 0 0.185"/>
+		<axis xyz="0 0 1" />
+	</joint>
+	<joint name="joint3" type="fixed">
+		<parent link="rot"/>
+		<child link="dyna2"/>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+	</joint>
+	<joint name="joint4" type="continuous">
+		<parent link="dyna2"/>
+		<child link="arm1"/>
+		<origin rpy="0 0 0" xyz="1 1 -1"/>
 	</joint>
 </robot>
