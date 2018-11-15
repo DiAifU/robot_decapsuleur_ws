@@ -7,6 +7,7 @@ from darknet_detector.msg import Object
 from sensor_msgs.msg import Image
 darknet_path = os.path.dirname(os.path.realpath(__file__)).replace('scripts', 'darknet_files')
 sys.path.insert(0, darknet_path)
+os.chdir(darknet_path)
 import darknet
 from cv_bridge import CvBridge, CvBridgeError
 
