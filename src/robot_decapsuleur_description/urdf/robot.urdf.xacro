@@ -1,0 +1,142 @@
+<robot name="my_robot">
+	<link name="base">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/base_plate-1.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+		  <origin rpy="0 0 0" xyz="-0.6 -0.6 0"/>
+		</visual>
+	</link>
+	<link name="base2">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/base_plate-2.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="-0.45 -0.45 0"/>
+		</visual>
+	</link>
+	<link name="dyna1">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 0 ${-pi/2}" xyz="0 0 0"/>
+		</visual>
+	</link>
+	<link name="rot">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/Rotating_plate.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 0 0.1" xyz="-0.4 -0.5 0"/>
+		</visual>
+	</link>
+	<link name="dyna2">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="${pi/2} 0 ${-pi/2}" xyz="0.008 0.175 0.205"/>
+		</visual>
+	</link>
+	<link name="arm1">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/arm.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="${pi/2} ${-pi/2} 0" xyz="0.565 1.435 -0.755"/>
+		</visual>
+	</link>
+	<link name="dyna3">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 ${pi/2} ${pi}" xyz="0 0 0"/>
+		</visual>
+	</link>
+	<link name="arm2">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/arm.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="${pi/2} ${-pi/2} 0" xyz="0.565 1.435 -0.755"/>
+		</visual>
+	</link>
+	<link name="lidar_support">
+		<visual>
+			<geometry>
+				<box size="0.9 1.8 0.1"/>
+			</geometry>
+			<origin rpy="${-pi/2} 0 0" xyz="0 0 0"/>
+		</visual>
+	</link>
+	<link name="lidar">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/rplidar_a2.stl" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="${pi/2} ${pi/2} 0" xyz="-0.25 0 0"/>
+		</visual>
+	</link>
+	<link name="dyna4">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 ${pi/2} ${pi}" xyz="0 0 0"/>
+		</visual>
+	</link>
+
+	<joint name="joint_base1" type="fixed">
+		<parent link="base"/>
+		<child link="base2"/>
+		<origin rpy="0 0 0" xyz="0 0 0.63"/>
+	</joint>
+	<joint name="joint_base2" type="fixed">
+		<parent link="base2"/>
+		<child link="dyna1"/>
+		<origin rpy="0 0 0" xyz="0 0 -0.15"/>
+	</joint>
+	<joint name="joint_rot" type="continuous">
+		<parent link="dyna1"/>
+		<child link="rot"/>
+		<origin rpy="0 0 0" xyz="0 0 0.185"/>
+		<axis xyz="0 0 1" />
+	</joint>
+	<joint name="joint_arm1" type="fixed">
+		<parent link="rot"/>
+		<child link="dyna2"/>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+	</joint>
+	<joint name="joint_arm2" type="continuous">
+		<parent link="dyna2"/>
+		<child link="arm1"/>
+		<origin rpy="0 0 0" xyz="0 0.175 0.205"/>
+	</joint>
+	<joint name="joint_arm3" type="fixed">
+		<parent link="arm1"/>
+		<child link="dyna3"/>
+		<origin rpy="0 0 0" xyz="0 0 2.09"/>
+	</joint>
+	<joint name="joint_arm4" type="continuous">
+		<parent link="dyna3"/>
+		<child link="arm2"/>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+	</joint>
+	<joint name="joint_lidar_support" type="fixed">
+		<parent link="arm2"/>
+		<child link="lidar_support"/>
+		<origin rpy="0 0 0" xyz="0 -0.25 0.1"/>
+	</joint>
+	<joint name="joint_lidar" type="fixed">
+		<parent link="lidar_support"/>
+		<child link="lidar"/>
+		<origin rpy="0 0 0" xyz="0 -0.05 -0.3"/>
+	</joint>
+	<joint name="joint_arm5" type="fixed">
+		<parent link="arm2"/>
+		<child link="dyna4"/>
+		<origin rpy="0 0 0" xyz="0 0 2.09"/>
+	</joint>
+</robot>
