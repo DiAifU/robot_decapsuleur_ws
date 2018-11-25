@@ -21,7 +21,7 @@ class ImageDetector:
             fct = self.get_first_object
         else:
             fct = self.get_specific_object
-        rospy.Subscriber("rgb/image_raw", Image, fct)
+        rospy.Subscriber("cv_camera_node/image_raw", Image, fct)
         self.pub = rospy.Publisher('darknet/detector', Object, queue_size=1)
 
     def publish_obj(self, obj_infos):
