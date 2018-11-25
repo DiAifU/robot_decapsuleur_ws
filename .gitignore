@@ -1,3 +1,8 @@
 build
 devel
 *.pyc
+
+# Remove specific packages
+src/dynamixel_*
+src/cv_camera
+src/rplidar_ros
