@@ -1,0 +1,19 @@
+<package>
+  <name>robot_decapsuleur_controller</name>
+  <version>0.0.1</version>
+  <description>
+    Configuration of the dynamixel controllers for the robot
+  </description>
+  <maintainer email="nicolas.montvernay@gmail.com">Nicolas Montvernay</maintainer>
+
+  <license>MIT</license>
+
+  <author>Nicolas Montvernay</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>dynamixel_controllers</run_depend>
+
+  <export>
+
+  </export>
+</package>
