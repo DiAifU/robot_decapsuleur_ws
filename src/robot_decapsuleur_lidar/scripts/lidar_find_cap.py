@@ -52,7 +52,7 @@ class FindCap:
         found = False
         while not found:
             self.move_robot(True)
-            if self.min_data[1] > d_dist_stop or abs(self.min_data[0] - current_min_data[0]) > d_angle_stop:
+            if self.min_data[1] > self.d_dist_stop or abs(self.min_data[0] - current_min_data[0]) > self.d_angle_stop:
                 found = True
         return [True, str(self.min_data)]
 

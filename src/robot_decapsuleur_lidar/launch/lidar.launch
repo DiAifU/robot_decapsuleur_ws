@@ -1,5 +1,5 @@
 <launch>
-
+  <remap from="/scan" to="/lidar/scan" />
   <node name="rplidarNode" pkg="rplidar_ros"  type="rplidarNode" output="screen">
   	<param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
   	<param name="serial_baudrate"     type="int"    value="115200"/>
@@ -8,7 +8,7 @@
   	<param name="angle_compensate"    type="bool"   value="true"/>
   </node>
 
-  <remap from="/scan" to="/lidar/scan" />
+
   <node name="lidar_min" pkg="robot_decapsuleur_lidar" type="lidar_min.py" output="screen" />
   <node name="lidar_find_cap" pkg="robot_decapsuleur_lidar" type="lidar_find_cap.py" output="screen" />
 </launch>
