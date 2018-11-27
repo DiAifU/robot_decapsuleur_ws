@@ -1,13 +1,25 @@
 <launch>
 
+  <include file="$(find robot_decapsuleur_moveit)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="true" />
+  </include>
+	<node name="joint_state_publisher" pkg="robot_decapsuleur_controller" type="state_publisher.py" output="screen" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
   <include file="$(find robot_decapsuleur_controller)/launch/controller_manager.launch" />
   <include file="$(find robot_decapsuleur_controller)/launch/start_meta_controller.launch" />
+
+  <include file="$(find robot_decapsuleur_moveit)/launch/move_group.launch">
+    <arg name="publish_monitored_planning_scene" value="true" />
+  </include>
 
   <include file="$(find robot_decapsuleur_lidar)/launch/lidar.launch" />
 
   <node pkg="cv_camera" name="cv_camera_node" type="cv_camera_node" output="screen" />
   <node pkg="darknet_detector" name="find_object" type="find_object.py" output="screen" />
-  
+
   <node pkg="robot_decapsuleur" name="robot_node" type="robot.py" output="screen" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_decapsuleur_description)/urdf/rviz.rviz" required="true" />
+
 
 </launch>

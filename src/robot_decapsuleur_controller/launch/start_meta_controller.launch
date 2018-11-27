@@ -6,10 +6,11 @@
                 --port pan_tilt_port
                 joint1_controller
                 joint2_controller
-                joint3_controller  
+                joint3_controller
+                joint4_controller
                 "
           output="screen"/>
-          
+
   <!-- Start joints trajectory controller controller -->
     <rosparam file="$(find robot_decapsuleur_controller)/config/joints_trajectory_controller.yaml" command="load"/>
     <node name="controller_spawner_meta" pkg="dynamixel_controllers" type="controller_spawner.py"
@@ -18,7 +19,8 @@
                 f_arm_controller
                 joint1_controller
                 joint2_controller
-                joint3_controller  
+                joint3_controller
+                joint4_controller
                "
           output="screen"/>
 </launch>

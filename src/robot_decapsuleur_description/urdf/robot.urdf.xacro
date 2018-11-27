@@ -1,4 +1,5 @@
 <robot name="robot_decapsuleur">
+	<link name="base_link" />
 	<link name="base">
 		<visual>
 			<geometry>
@@ -36,7 +37,7 @@
 			<geometry>
 				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
 			</geometry>
-			<origin rpy="${pi/2} 0 ${-pi/2}" xyz="0.008 0.175 0.205"/>
+			<origin rpy="${pi/2} 0 ${pi/2}" xyz="0.008 0.175 0.205"/>
 		</visual>
 	</link>
 	<link name="arm1">
@@ -44,7 +45,7 @@
 			<geometry>
 				<mesh filename="package://robot_decapsuleur_description/stl/arm.STL" scale="0.01 0.01 0.01"/>
 			</geometry>
-			<origin rpy="${pi/2} ${-pi/2} 0" xyz="0.565 1.435 -0.755"/>
+			<origin rpy="${pi/2} ${-pi/2} ${pi}" xyz="-0.565 -1.435 -0.755"/>
 		</visual>
 	</link>
 	<link name="dyna3">
@@ -52,7 +53,7 @@
 			<geometry>
 				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
 			</geometry>
-			<origin rpy="0 ${pi/2} ${pi}" xyz="0 0 0"/>
+			<origin rpy="${pi/2} ${pi/2} ${-pi/2}" xyz="0 0 0"/>
 		</visual>
 	</link>
 	<link name="arm2">
@@ -60,7 +61,7 @@
 			<geometry>
 				<mesh filename="package://robot_decapsuleur_description/stl/arm.STL" scale="0.01 0.01 0.01"/>
 			</geometry>
-			<origin rpy="${pi/2} ${-pi/2} 0" xyz="0.565 1.435 -0.755"/>
+			<origin rpy="${pi/2} ${-pi/2} ${pi}" xyz="-0.565 -1.435 -0.755"/>
 		</visual>
 	</link>
 	<link name="lidar_support">
@@ -103,7 +104,10 @@
 			<origin rpy="${pi/2} 0 0" xyz="0 0 0"/>
 		</visual>
 	</link>
-
+	<joint name="joint_base_link" type="fixed">
+		<parent link="base_link"/>
+		<child link="base"/>
+	</joint>
 	<joint name="joint_base1" type="fixed">
 		<parent link="base"/>
 		<child link="base2"/>
@@ -117,33 +121,33 @@
 	<joint name="joint_rot" type="continuous">
 		<parent link="dyna1"/>
 		<child link="rot"/>
-		<origin rpy="0 0 0" xyz="0 0 0.185"/>
+		<origin rpy="0 0 ${pi/2 + pi/4}" xyz="0 0 0.185"/>
 		<axis xyz="0 0 1" />
 	</joint>
 	<joint name="joint_arm1" type="fixed">
 		<parent link="rot"/>
 		<child link="dyna2"/>
-		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<origin rpy="0 0 ${pi}" xyz="0 0.28 0"/>
 	</joint>
 	<joint name="joint_arm2" type="continuous">
 		<parent link="dyna2"/>
 		<child link="arm1"/>
-		<origin rpy="0 0 0" xyz="0 0.175 0.205"/>
+		<origin rpy="${pi/2} 0 0" xyz="0 0.175 0.205"/>
 	</joint>
 	<joint name="joint_arm3" type="fixed">
 		<parent link="arm1"/>
 		<child link="dyna3"/>
-		<origin rpy="0 0 0" xyz="0 0 2.09"/>
+		<origin rpy="0 0 ${pi}" xyz="0 0 2.09"/>
 	</joint>
 	<joint name="joint_arm4" type="continuous">
 		<parent link="dyna3"/>
 		<child link="arm2"/>
-		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<origin rpy="${-pi/2} ${pi} 0" xyz="0 0 0"/>
 	</joint>
 	<joint name="joint_lidar_support" type="fixed">
 		<parent link="arm2"/>
 		<child link="lidar_support"/>
-		<origin rpy="0 0 0" xyz="0 -0.32 -0.1"/>
+		<origin rpy="0 0 ${pi}" xyz="0 0.32 -0.1"/>
 	</joint>
 	<joint name="joint_lidar" type="fixed">
 		<parent link="lidar_support"/>

@@ -3,7 +3,7 @@ joint1_controller:
         package: dynamixel_controllers
         module: joint_position_controller
         type: JointPositionController
-    joint_name: joint1
+    joint_name: joint_rot
     joint_speed: 1.0
     motor:
         id: 1
@@ -16,7 +16,7 @@ joint2_controller:
         package: dynamixel_controllers
         module: joint_position_controller
         type: JointPositionController
-    joint_name: joint2
+    joint_name: joint_arm2
     joint_speed: 1.0
     motor:
         id: 2
@@ -29,7 +29,7 @@ joint3_controller:
         package: dynamixel_controllers
         module: joint_position_controller
         type: JointPositionController
-    joint_name: joint3
+    joint_name: joint_arm4
     joint_speed: 1.0
     motor:
         id: 3
@@ -42,7 +42,7 @@ joint4_controller:
         package: dynamixel_controllers
         module: joint_position_controller
         type: JointPositionController
-    joint_name: joint4
+    joint_name: joint_arm6
     joint_speed: 1.0
     motor:
         id: 4

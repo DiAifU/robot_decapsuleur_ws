@@ -8,4 +8,4 @@ moveit_setup_assistant_config:
   CONFIG:
     author_name: Nicolas Montvernay
     author_email: nicolas.montvernay@gmail.com
-    generated_timestamp: 1543118516
+    generated_timestamp: 1543311665

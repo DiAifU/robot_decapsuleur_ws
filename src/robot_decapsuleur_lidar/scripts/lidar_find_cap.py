@@ -41,9 +41,7 @@ class FindCap:
 
 
     def get_arm_state(self, state):
-        if state.current_pos > 0.4 or state.current_pos < -1:
-            print("DOING SHIIIIT")
-            exit(-1)
+            #print("DOING SHIIIIT")
         self.current_arm_angle = state.current_pos
 
 

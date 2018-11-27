@@ -2,7 +2,7 @@
 
 import rospy
 from enum import Enum
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Bool
 from darknet_detector.srv import ObjectInfo
 import math
 import time
@@ -10,9 +10,10 @@ from robot_decapsuleur_lidar.msg import LidarPoint
 from robot_decapsuleur_lidar.srv import LidarCapPoint
 import tf
 from tf.msg import tfMessage
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, PoseStamped
 from dynamixel_controllers.srv import SetSpeed
-
+import moveit_commander
+import sys
 
 class State(Enum):
     FIND_WITH_LIDAR = 0
@@ -35,20 +36,21 @@ class Robot:
         # Variables
         self.state = State.FIND_WITH_LIDAR
         self.lidar_sub = None
+        self.cap_point = None
         rospy.Subscriber("/sleep_mode", Bool, self.set_sleep_mode)
 
         self.rot_pub = rospy.Publisher('/joint1_controller/command', Float64, queue_size=1)
         self.arm1_pub = rospy.Publisher('/joint2_controller/command', Float64, queue_size=1)
         self.arm2_pub = rospy.Publisher('/joint3_controller/command', Float64, queue_size=1)
 
-        self.cap_point = None
         self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage, queue_size=1)
-        rospy.sleep(1)
-        for i in range(1, 4):
-            topic = '/joint{}_controller/set_speed'.format(i)
-            rospy.wait_for_service(topic)
-            set_speed = rospy.ServiceProxy(topic, SetSpeed)
-            set_speed(0.3)
+        self.tf_listener = tf.TransformListener()
+
+        rospy.sleep(90)
+        moveit_commander.roscpp_initialize(sys.argv)
+        self.robot = moveit_commander.RobotCommander()
+        self.scene = moveit_commander.PlanningSceneInterface()
+        self.group = moveit_commander.MoveGroupCommander("arm")
 
 
     def debug(self, d):
@@ -109,6 +111,13 @@ class Robot:
             self.lidar_sub.unregister()
             self.lidar_sub = None
 
+    def set_motors_speed(self, speed):
+        for i in range(1, 4):
+            topic = '/joint{}_controller/set_speed'.format(i)
+            rospy.wait_for_service(topic)
+            set_speed = rospy.ServiceProxy(topic, SetSpeed)
+            set_speed(speed)
+
     def start(self):
         rospy.init_node('robot_decapsuleur')
         while not rospy.is_shutdown():
@@ -120,11 +129,6 @@ class Robot:
                 t.child_frame_id = "cap"
                 t.transform.translation.x = self.cap_point.distance * math.cos(self.cap_point.angle - math.pi/2)
                 t.transform.translation.y = self.cap_point.distance * math.sin(self.cap_point.angle - math.pi/2)
-                t.transform.translation.z = 0.0
-
-                t.transform.rotation.x = 0.0
-                t.transform.rotation.y = 0.0
-                t.transform.rotation.z = 0.0
                 t.transform.rotation.w = 1.0
 
                 tfm = tfMessage([t])
@@ -134,11 +138,12 @@ class Robot:
             if self.state == State.FIND_WITH_LIDAR:
                 if self.lidar_sub == None:
                     self.debug("Initialisation du robot")
-                    time.sleep(3)
+                    self.set_motors_speed(1.0)
                     self.rot_pub.publish(self.ANGLE_ZERO_ROT)
                     self.arm1_pub.publish(self.ANGLE_ZERO_ARM1)
                     self.arm2_pub.publish(self.ANGLE_ZERO_ARM2)
                     time.sleep(3)
+                    self.set_motors_speed(0.3)
                     self.lidar_sub = rospy.Subscriber('/lidar/minimum', LidarPoint, self.lidar_found)
             elif self.state == State.VERIFY_WITH_CAMERA:
                 if self.verify_with_cam():
@@ -154,7 +159,19 @@ class Robot:
                     self.cap_point = cap_data.point
                     self.switch_state(State.PLACE_ARM)
             elif self.state == State.PLACE_ARM:
-                None
+                # Compute pose in lidar frame
+                p = PoseStamped()
+                p.header.frame_id = "lidar"
+                p.header.stamp = rospy.Time.now()
+                p.pose.orientation.w = 1.0
+                p.pose.position.x = self.cap_point.distance * math.cos(self.cap_point.angle - math.pi/2)
+                p.pose.position.y = self.cap_point.distance * math.sin(self.cap_point.angle - math.pi/2)
+
+                self.group.set_joint_value_target(p, True)
+                self.group.plan()
+                self.group.go(wait=True)
+
+
             elif self.state == State.REMOVE_CAP:
                 None
             elif self.state == State.SLEEP:
