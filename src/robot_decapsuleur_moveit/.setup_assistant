@@ -4,7 +4,7 @@ moveit_setup_assistant_config:
     relative_path: urdf/robot.urdf.xacro
     xacro_args: ""
   SRDF:
-    relative_path: config/my_robot.srdf
+    relative_path: config/robot_decapsuleur.srdf
   CONFIG:
     author_name: Nicolas Montvernay
     author_email: nicolas.montvernay@gmail.com

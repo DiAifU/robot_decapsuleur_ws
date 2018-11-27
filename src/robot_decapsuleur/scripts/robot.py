@@ -6,9 +6,12 @@ from std_msgs.msg import Float64
 from darknet_detector.srv import ObjectInfo
 import math
 import time
-from std_srvs.srv import Trigger
 from robot_decapsuleur_lidar.msg import LidarPoint
-
+from robot_decapsuleur_lidar.srv import LidarCapPoint
+import tf
+from tf.msg import tfMessage
+from geometry_msgs.msg import TransformStamped
+from dynamixel_controllers.srv import SetSpeed
 
 
 class State(Enum):
@@ -17,6 +20,7 @@ class State(Enum):
     FIND_CAP = 2
     PLACE_ARM = 3
     REMOVE_CAP = 4
+    SLEEP = 5
 
 # min motor: -2.12, max: 2.62, zero: -2.35
 
@@ -31,23 +35,41 @@ class Robot:
         # Variables
         self.state = State.FIND_WITH_LIDAR
         self.lidar_sub = None
-        self.rot_pub = rospy.Publisher('/joint1_controller/command', Float64, queue_size=0)
-        self.arm1_pub = rospy.Publisher('/joint2_controller/command', Float64, queue_size=0)
-        self.arm2_pub = rospy.Publisher('/joint3_controller/command', Float64, queue_size=0)
+        rospy.Subscriber("/sleep_mode", Bool, self.set_sleep_mode)
+
+        self.rot_pub = rospy.Publisher('/joint1_controller/command', Float64, queue_size=1)
+        self.arm1_pub = rospy.Publisher('/joint2_controller/command', Float64, queue_size=1)
+        self.arm2_pub = rospy.Publisher('/joint3_controller/command', Float64, queue_size=1)
+
+        self.cap_point = None
+        self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage, queue_size=1)
+        rospy.sleep(1)
+        for i in range(1, 4):
+            topic = '/joint{}_controller/set_speed'.format(i)
+            rospy.wait_for_service(topic)
+            set_speed = rospy.ServiceProxy(topic, SetSpeed)
+            set_speed(0.3)
 
 
     def debug(self, d):
         if self.debug: print(d)
+
+    def set_sleep_mode(self, data):
+        if self.state == State.SLEEP and not data.data:
+            self.switch_state(State.FIND_WITH_LIDAR)
+        elif self.state != State.SLEEP and data.data:
+            self.switch_state(State.SLEEP)
 
 
     def lidar_found(self, data):
         if self.state != State.FIND_WITH_LIDAR: # unregister is taking some time
             return
 
-        if data.distance > 0.3:
+        if data.distance < 0.3 or data.distance > 0.8:
             return
 
-        angle = (data.angle + self.ANGLE_ZERO_ROT - math.pi)%(2*math.pi) - math.pi
+        angle = (data.angle + self.ANGLE_ZERO_ROT)%(2*math.pi) - math.pi
+
         self.debug(angle - self.ANGLE_ZERO_ROT)
         if abs(angle - self.ANGLE_ZERO_ROT) > self.ERROR_STOP :
             self.rot_pub.publish(angle)
@@ -73,9 +95,10 @@ class Robot:
         self.debug("Waiting for find cap service")
         rospy.wait_for_service('lidar/find_cap')
         self.debug("Service found")
-        find_cap_srv = rospy.ServiceProxy('lidar/find_cap', Trigger)
+        find_cap_srv = rospy.ServiceProxy('lidar/find_cap', LidarCapPoint)
         res = find_cap_srv()
-        self.debug("Cap found at data: {}".format(res.message))
+        self.debug("Cap found at data: {}".format(res))
+        return res
 
     def switch_state(self, new_state):
         self.debug("Switch to new state : {}".format(new_state))
@@ -89,6 +112,25 @@ class Robot:
     def start(self):
         rospy.init_node('robot_decapsuleur')
         while not rospy.is_shutdown():
+            rospy.sleep(0.1)
+            if self.cap_point != None:
+                t = TransformStamped()
+                t.header.frame_id = "lidar"
+                t.header.stamp = rospy.Time.now()
+                t.child_frame_id = "cap"
+                t.transform.translation.x = self.cap_point.distance * math.cos(self.cap_point.angle - math.pi/2)
+                t.transform.translation.y = self.cap_point.distance * math.sin(self.cap_point.angle - math.pi/2)
+                t.transform.translation.z = 0.0
+
+                t.transform.rotation.x = 0.0
+                t.transform.rotation.y = 0.0
+                t.transform.rotation.z = 0.0
+                t.transform.rotation.w = 1.0
+
+                tfm = tfMessage([t])
+                self.pub_tf.publish(tfm)
+
+
             if self.state == State.FIND_WITH_LIDAR:
                 if self.lidar_sub == None:
                     self.debug("Initialisation du robot")
@@ -105,11 +147,17 @@ class Robot:
                     self.switch_state(State.FIND_WITH_LIDAR)
             elif self.state == State.FIND_CAP:
                 rospy.sleep(1)
-                self.find_cap()
-                self.switch_state(State.PLACE_ARM)
+                cap_data = self.find_cap()
+                if not cap_data.success:
+                    self.switch_state(State.FIND_WITH_LIDAR)
+                else:
+                    self.cap_point = cap_data.point
+                    self.switch_state(State.PLACE_ARM)
             elif self.state == State.PLACE_ARM:
                 None
             elif self.state == State.REMOVE_CAP:
+                None
+            elif self.state == State.SLEEP:
                 None
 
 

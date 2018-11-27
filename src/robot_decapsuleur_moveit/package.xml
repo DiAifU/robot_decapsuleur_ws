@@ -3,7 +3,7 @@
   <name>robot_decapsuleur_moveit</name>
   <version>0.3.0</version>
   <description>
-     An automatically generated package with all the configuration and launch files for using the my_robot with the MoveIt! Motion Planning Framework
+     An automatically generated package with all the configuration and launch files for using the robot_decapsuleur with the MoveIt! Motion Planning Framework
   </description>
   <author email="nicolas.montvernay@gmail.com">Nicolas Montvernay</author>
   <maintainer email="nicolas.montvernay@gmail.com">Nicolas Montvernay</maintainer>

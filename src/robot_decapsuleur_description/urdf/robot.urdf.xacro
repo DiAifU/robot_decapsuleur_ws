@@ -1,4 +1,4 @@
-<robot name="my_robot">
+<robot name="robot_decapsuleur">
 	<link name="base">
 		<visual>
 			<geometry>
@@ -66,7 +66,7 @@
 	<link name="lidar_support">
 		<visual>
 			<geometry>
-				<box size="0.9 1.8 0.1"/>
+				<box size="1.0 2.95 0.05"/>
 			</geometry>
 			<origin rpy="${-pi/2} 0 0" xyz="0 0 0"/>
 		</visual>
@@ -76,7 +76,7 @@
 			<geometry>
 				<mesh filename="package://robot_decapsuleur_description/stl/rplidar_a2.stl" scale="0.01 0.01 0.01"/>
 			</geometry>
-			<origin rpy="${pi/2} ${pi/2} 0" xyz="-0.25 0 0"/>
+			<origin rpy="0 0 ${-pi/2}" xyz="-0.25 0 0"/>
 		</visual>
 	</link>
 	<link name="dyna4">
@@ -85,6 +85,22 @@
 				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="0 ${pi/2} ${pi}" xyz="0 0 0"/>
+		</visual>
+	</link>
+	<link name="bottle_opener_support">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/bottle_opener_support.stl" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="0 ${pi/2} 0" xyz="0 0 0"/>
+		</visual>
+	</link>
+	<link name="bottle_opener">
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_decapsuleur_description/stl/bottle_opener.stl" scale="0.01 0.01 0.01"/>
+			</geometry>
+			<origin rpy="${pi/2} 0 0" xyz="0 0 0"/>
 		</visual>
 	</link>
 
@@ -127,16 +143,26 @@
 	<joint name="joint_lidar_support" type="fixed">
 		<parent link="arm2"/>
 		<child link="lidar_support"/>
-		<origin rpy="0 0 0" xyz="0 -0.25 0.1"/>
+		<origin rpy="0 0 0" xyz="0 -0.32 -0.1"/>
 	</joint>
 	<joint name="joint_lidar" type="fixed">
 		<parent link="lidar_support"/>
 		<child link="lidar"/>
-		<origin rpy="0 0 0" xyz="0 -0.05 -0.3"/>
+		<origin rpy="${pi/2} 0 0" xyz="0 -0.05 -0.93"/>
 	</joint>
 	<joint name="joint_arm5" type="fixed">
 		<parent link="arm2"/>
 		<child link="dyna4"/>
 		<origin rpy="0 0 0" xyz="0 0 2.09"/>
+	</joint>
+	<joint name="joint_arm6" type="continuous">
+		<parent link="dyna4"/>
+		<child link="bottle_opener_support"/>
+		<origin rpy="${-pi/2} 0 0" xyz="0 0 0"/>
+	</joint>
+	<joint name="joint_arm7" type="fixed">
+		<parent link="bottle_opener_support"/>
+		<child link="bottle_opener"/>
+		<origin rpy="0 0 0" xyz="0 -0.25 -0.2"/>
 	</joint>
 </robot>

@@ -1,0 +1,9 @@
+controller_manager_ns: 'robot_decapsuleur'
+controller_list:
+  - name: robot_decapsuleur_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - shoulder_1_joint
+      - shoulder_2_joint
