@@ -26,6 +26,6 @@ if __name__ == "__main__":
     rospy.init_node("darknet_find_object")
     bridge = CvBridge()
     darknet.load()
-    rospy.Subscriber("/cv_camera_node/image_raw", Image, image_received)
+    rospy.Subscriber("camera/image_raw_rotated", Image, image_received)
     rospy.Service('darknet/find_object', ObjectInfo, contains_object)
     rospy.spin()

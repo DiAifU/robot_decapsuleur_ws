@@ -9,13 +9,20 @@ import numpy as np
 
 def get_lidar_data(laserscan):
 	ranges = list(laserscan.ranges)
-	ranges[len(laserscan.ranges)//3:2*len(laserscan.ranges)//3] = [np.inf for _ in range(len(laserscan.ranges)//3)]
+
+	# Remove a third in the back
+	length = len(ranges)
+	for (i, r) in enumerate(ranges):
+		if (i > 2*len(ranges)//5 and i < 4*len(ranges)//5) or ranges[i] < 0.3 or ranges[i] > 0.8:
+			ranges[i] = np.inf
+
+
 	minimum   = min(ranges)
-	data = LidarPoint()
-	data.angle = (ranges.index(minimum)*laserscan.angle_increment - math.pi)%(2*math.pi)
-	data.distance = minimum
-	# print(ranges.index(minimum), (ranges.index(minimum)*laserscan.angle_increment - math.pi)%(2*math.pi))
-	pub.publish(data)
+	if minimum != np.inf:
+		data = LidarPoint()
+		data.angle = (ranges.index(minimum)*laserscan.angle_increment - math.pi)%(2*math.pi)
+		data.distance = minimum
+		pub.publish(data)
 
 
 

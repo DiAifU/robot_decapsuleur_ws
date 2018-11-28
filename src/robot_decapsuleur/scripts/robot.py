@@ -12,8 +12,11 @@ import tf
 from tf.msg import tfMessage
 from geometry_msgs.msg import TransformStamped, PoseStamped
 from dynamixel_controllers.srv import SetSpeed
+from dynamixel_msgs.msg import JointState
 import moveit_commander
 import sys
+from tf.transformations import quaternion_from_euler
+import tf
 
 class State(Enum):
     FIND_WITH_LIDAR = 0
@@ -31,26 +34,31 @@ class Robot:
         self.ANGLE_ZERO_ROT = -2.35
         self.ANGLE_ZERO_ARM1 = -1.57
         self.ANGLE_ZERO_ARM2 = 0
-        self.ERROR_STOP = 0.2
+        self.ERROR_STOP = 0.05
 
         # Variables
         self.state = State.FIND_WITH_LIDAR
         self.lidar_sub = None
         self.cap_point = None
+
+        rospy.init_node('robot_decapsuleur')
         rospy.Subscriber("/sleep_mode", Bool, self.set_sleep_mode)
 
         self.rot_pub = rospy.Publisher('/joint1_controller/command', Float64, queue_size=1)
+        self.rot_state = rospy.Subscriber('/joint1_controller/state', JointState, self.get_rot_state)
         self.arm1_pub = rospy.Publisher('/joint2_controller/command', Float64, queue_size=1)
         self.arm2_pub = rospy.Publisher('/joint3_controller/command', Float64, queue_size=1)
+        self.eff_pub = rospy.Publisher('/joint4_controller/command', Float64, queue_size=1)
 
         self.pub_tf = rospy.Publisher("/tf", tf.msg.tfMessage, queue_size=1)
         self.tf_listener = tf.TransformListener()
 
-        rospy.sleep(90)
+        rospy.sleep(80)
         moveit_commander.roscpp_initialize(sys.argv)
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
         self.group = moveit_commander.MoveGroupCommander("arm")
+
 
 
     def debug(self, d):
@@ -62,22 +70,38 @@ class Robot:
         elif self.state != State.SLEEP and data.data:
             self.switch_state(State.SLEEP)
 
+    def get_rot_state(self, state):
+        self.current_rot = state.current_pos
+
 
     def lidar_found(self, data):
         if self.state != State.FIND_WITH_LIDAR: # unregister is taking some time
             return
 
-        if data.distance < 0.3 or data.distance > 0.8:
-            return
 
-        angle = (data.angle + self.ANGLE_ZERO_ROT)%(2*math.pi) - math.pi
+        self.cap_point = data
 
-        self.debug(angle - self.ANGLE_ZERO_ROT)
-        if abs(angle - self.ANGLE_ZERO_ROT) > self.ERROR_STOP :
+        angle = (self.current_rot + data.angle)%(2*math.pi) - math.pi
+
+        self.debug(angle - self.current_rot)
+        if abs(angle - self.current_rot) > self.ERROR_STOP :
             self.rot_pub.publish(angle)
         else:
             self.debug("Objet detecte")
             self.switch_state(State.VERIFY_WITH_CAMERA)
+
+        # p = PoseStamped()
+        # p.header.frame_id = "lidar"
+        # p.header.stamp = rospy.Time.now()
+        # pose = tfl.lookupTransform("base", "lidar", rospy.Time(0))
+        # p.pose.orientation.w = self.group.get_current_pose().orientation.w
+        # p.pose.position.x = data.distance * 3 * math.cos(data.angle - math.pi/2)
+        # p.pose.position.y = data.distance * 3 * math.sin(data.angle - math.pi/2)
+        # p.orien
+        #
+        # self.group.set_joint_value_target(p, True)
+        # self.group.plan()
+        # self.group.go()
 
 
     def verify_with_cam(self):
@@ -88,7 +112,7 @@ class Robot:
         attempt = 0
         found = False
         while attempt < 5 and found == False:
-            found = contains_obj_srv('person').found
+            found = contains_obj_srv('bottle').found
             attempt = attempt + 1
             self.debug("Bottle found: {}, attempt {}".format(found, attempt))
         return found
@@ -103,6 +127,8 @@ class Robot:
         return res
 
     def switch_state(self, new_state):
+        rospy.sleep(1)
+
         self.debug("Switch to new state : {}".format(new_state))
         self.state = new_state
 
@@ -119,7 +145,6 @@ class Robot:
             set_speed(speed)
 
     def start(self):
-        rospy.init_node('robot_decapsuleur')
         while not rospy.is_shutdown():
             rospy.sleep(0.1)
             if self.cap_point != None:
@@ -138,12 +163,10 @@ class Robot:
             if self.state == State.FIND_WITH_LIDAR:
                 if self.lidar_sub == None:
                     self.debug("Initialisation du robot")
-                    self.set_motors_speed(1.0)
-                    self.rot_pub.publish(self.ANGLE_ZERO_ROT)
-                    self.arm1_pub.publish(self.ANGLE_ZERO_ARM1)
-                    self.arm2_pub.publish(self.ANGLE_ZERO_ARM2)
-                    time.sleep(3)
-                    self.set_motors_speed(0.3)
+                    rospy.sleep(2)
+                    self.group.set_named_target("lidar_check")
+                    self.group.plan()
+                    self.group.go(wait=True)
                     self.lidar_sub = rospy.Subscriber('/lidar/minimum', LidarPoint, self.lidar_found)
             elif self.state == State.VERIFY_WITH_CAMERA:
                 if self.verify_with_cam():
@@ -151,7 +174,6 @@ class Robot:
                 else:
                     self.switch_state(State.FIND_WITH_LIDAR)
             elif self.state == State.FIND_CAP:
-                rospy.sleep(1)
                 cap_data = self.find_cap()
                 if not cap_data.success:
                     self.switch_state(State.FIND_WITH_LIDAR)
@@ -159,23 +181,26 @@ class Robot:
                     self.cap_point = cap_data.point
                     self.switch_state(State.PLACE_ARM)
             elif self.state == State.PLACE_ARM:
+                self.eff_pub.publish(-math.pi/4)
                 # Compute pose in lidar frame
-                p = PoseStamped()
+                p = self.group.get_current_pose()
+                print(p)
                 p.header.frame_id = "lidar"
                 p.header.stamp = rospy.Time.now()
-                p.pose.orientation.w = 1.0
-                p.pose.position.x = self.cap_point.distance * math.cos(self.cap_point.angle - math.pi/2)
-                p.pose.position.y = self.cap_point.distance * math.sin(self.cap_point.angle - math.pi/2)
+                p.pose.position.x += self.cap_point.distance * math.cos(self.cap_point.angle - math.pi/2)
+                p.pose.position.y += self.cap_point.distance * math.sin(self.cap_point.angle - math.pi/2)
+                print(p)
 
                 self.group.set_joint_value_target(p, True)
                 self.group.plan()
                 self.group.go(wait=True)
-
-
+                self.switch_state(State.FIND_WITH_LIDAR)
             elif self.state == State.REMOVE_CAP:
                 None
             elif self.state == State.SLEEP:
-                None
+                self.group.set_named_target("sleep_mode")
+                self.group.plan()
+                self.group.go(wait=True)
 
 
 

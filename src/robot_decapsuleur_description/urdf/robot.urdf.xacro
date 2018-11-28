@@ -3,7 +3,7 @@
 	<link name="base">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/base_plate-1.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/base_plate-1.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 		  <origin rpy="0 0 0" xyz="-0.6 -0.6 0"/>
 		</visual>
@@ -11,7 +11,7 @@
 	<link name="base2">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/base_plate-2.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/base_plate-2.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="-0.45 -0.45 0"/>
 		</visual>
@@ -19,7 +19,7 @@
 	<link name="dyna1">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="0 0 ${-pi/2}" xyz="0 0 0"/>
 		</visual>
@@ -27,7 +27,7 @@
 	<link name="rot">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/Rotating_plate.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/Rotating_plate.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="0 0 0.1" xyz="-0.4 -0.5 0"/>
 		</visual>
@@ -35,7 +35,7 @@
 	<link name="dyna2">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="${pi/2} 0 ${pi/2}" xyz="0.008 0.175 0.205"/>
 		</visual>
@@ -43,7 +43,7 @@
 	<link name="arm1">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/arm.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/arm.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="${pi/2} ${-pi/2} ${pi}" xyz="-0.565 -1.435 -0.755"/>
 		</visual>
@@ -51,7 +51,7 @@
 	<link name="dyna3">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="${pi/2} ${pi/2} ${-pi/2}" xyz="0 0 0"/>
 		</visual>
@@ -59,7 +59,7 @@
 	<link name="arm2">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/arm.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/arm.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="${pi/2} ${-pi/2} ${pi}" xyz="-0.565 -1.435 -0.755"/>
 		</visual>
@@ -75,7 +75,7 @@
 	<link name="lidar">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/rplidar_a2.stl" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/rplidar_a2.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="0 0 ${-pi/2}" xyz="-0.25 0 0"/>
 		</visual>
@@ -83,7 +83,7 @@
 	<link name="dyna4">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.STL" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/DYNAMIXEL_AX-12A.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="0 ${pi/2} ${pi}" xyz="0 0 0"/>
 		</visual>
@@ -91,7 +91,7 @@
 	<link name="bottle_opener_support">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/bottle_opener_support.stl" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/bottle_opener_support.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="0 ${pi/2} 0" xyz="0 0 0"/>
 		</visual>
@@ -99,7 +99,7 @@
 	<link name="bottle_opener">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_decapsuleur_description/stl/bottle_opener.stl" scale="0.01 0.01 0.01"/>
+				<mesh filename="package://robot_decapsuleur_description/stl/bottle_opener.dae" scale="0.01 0.01 0.01"/>
 			</geometry>
 			<origin rpy="${pi/2} 0 0" xyz="0 0 0"/>
 		</visual>
@@ -162,7 +162,7 @@
 	<joint name="joint_arm6" type="continuous">
 		<parent link="dyna4"/>
 		<child link="bottle_opener_support"/>
-		<origin rpy="${-pi/2} 0 0" xyz="0 0 0"/>
+		<origin rpy="${pi/2} ${pi} 0" xyz="0 0 0"/>
 	</joint>
 	<joint name="joint_arm7" type="fixed">
 		<parent link="bottle_opener_support"/>

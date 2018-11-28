@@ -11,7 +11,7 @@ if __name__ == "__main__":
     rospy.init_node("camerasim")
     cap = cv2.VideoCapture(0)
     bridge = CvBridge()
-    pub = rospy.Publisher("rgb/image_raw", Image, queue_size=1)
+    pub = rospy.Publisher("/cv_camera_node/image_raw", Image, queue_size=1)
     rospy.wait_for_service('/darknet/contains_object')
     contains_obj_srv = rospy.ServiceProxy('/darknet/contains_object', ObjectInfo)
 

@@ -15,7 +15,7 @@ class FindCap:
     current_arm_angle = None
     d_angle_up = 0.05
     d_angle_down = 0.05
-    d_dist_stop = 1.5
+    d_dist_stop = 0.6
     d_angle_stop = 0.5
 
     def __init__(self):
@@ -37,7 +37,7 @@ class FindCap:
             self.arm.publish(self.current_arm_angle - self.d_angle_up)
         else:
             self.arm.publish(self.current_arm_angle + self.d_angle_down)
-        rospy.sleep(0.1)
+        rospy.sleep(0.05)
 
 
     def get_arm_state(self, state):

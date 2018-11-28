@@ -15,8 +15,9 @@
 
   <include file="$(find robot_decapsuleur_lidar)/launch/lidar.launch" />
 
-  <node pkg="cv_camera" name="cv_camera_node" type="cv_camera_node" output="screen" />
-  <node pkg="darknet_detector" name="find_object" type="find_object.py" output="screen" />
+  <!-- <node pkg="cv_camera" name="cv_camera_node" type="cv_camera_node" output="log"/> -->
+  <node pkg="robot_decapsuleur" name="rotate_camera_node" type="rotate_camera.py" />
+  <node pkg="darknet_detector" name="find_object" type="find_object.py" />
 
   <node pkg="robot_decapsuleur" name="robot_node" type="robot.py" output="screen" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_decapsuleur_description)/urdf/rviz.rviz" required="true" />
