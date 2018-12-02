@@ -44,7 +44,7 @@
     </group_state>
     <group_state name="lidar_check" group="arm">
         <joint name="joint_arm2" value="-1.5708" />
-        <joint name="joint_arm4" value="0" />
+        <joint name="joint_arm4" value="0.1562" />
         <joint name="joint_arm6" value="1.51" />
         <joint name="joint_rot" value="-2.3562" />
     </group_state>

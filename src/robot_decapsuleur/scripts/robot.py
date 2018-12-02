@@ -111,7 +111,7 @@ class Robot:
         contains_obj_srv = rospy.ServiceProxy('darknet/find_object', ObjectInfo)
         attempt = 0
         found = False
-        while attempt < 5 and found == False:
+        while attempt < 3 and found == False:
             found = contains_obj_srv('bottle').found
             attempt = attempt + 1
             self.debug("Bottle found: {}, attempt {}".format(found, attempt))
@@ -152,8 +152,8 @@ class Robot:
                 t.header.frame_id = "lidar"
                 t.header.stamp = rospy.Time.now()
                 t.child_frame_id = "cap"
-                t.transform.translation.x = self.cap_point.distance * math.cos(self.cap_point.angle - math.pi/2)
-                t.transform.translation.y = self.cap_point.distance * math.sin(self.cap_point.angle - math.pi/2)
+                t.transform.translation.x += self.cap_point.distance * 3.5 * math.sin(self.cap_point.angle - math.pi)
+                t.transform.translation.y += self.cap_point.distance * 3.5 * math.cos(self.cap_point.angle - math.pi)
                 t.transform.rotation.w = 1.0
 
                 tfm = tfMessage([t])
@@ -181,22 +181,24 @@ class Robot:
                     self.cap_point = cap_data.point
                     self.switch_state(State.PLACE_ARM)
             elif self.state == State.PLACE_ARM:
-                self.eff_pub.publish(-math.pi/4)
+                self.eff_pub.publish(-math.pi/5)
+                rospy.sleep(3)
                 # Compute pose in lidar frame
                 p = self.group.get_current_pose()
                 print(p)
-                p.header.frame_id = "lidar"
                 p.header.stamp = rospy.Time.now()
-                p.pose.position.x += self.cap_point.distance * math.cos(self.cap_point.angle - math.pi/2)
-                p.pose.position.y += self.cap_point.distance * math.sin(self.cap_point.angle - math.pi/2)
+                p.pose.position.y -= self.cap_point.distance * 2.5 * math.sin(self.cap_point.angle - math.pi/2)
+                p.pose.position.x -= 0.2
                 print(p)
 
                 self.group.set_joint_value_target(p, True)
                 self.group.plan()
                 self.group.go(wait=True)
-                self.switch_state(State.FIND_WITH_LIDAR)
+                self.switch_state(State.REMOVE_CAP)
             elif self.state == State.REMOVE_CAP:
-                None
+                self.eff_pub.publish(-math.pi/2)
+                rospy.sleep(2)
+                self.switch_state(State.FIND_WITH_LIDAR)
             elif self.state == State.SLEEP:
                 self.group.set_named_target("sleep_mode")
                 self.group.plan()

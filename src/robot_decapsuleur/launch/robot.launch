@@ -19,6 +19,11 @@
   <node pkg="robot_decapsuleur" name="rotate_camera_node" type="rotate_camera.py" />
   <node pkg="darknet_detector" name="find_object" type="find_object.py" />
 
+  <node pkg="rosserial_python" type="serial_node.py" name="serial_node">
+    <param name="port" value="/dev/ttyUSB1"/>
+    <param name="baud" value="57600"/>
+  </node>
+
   <node pkg="robot_decapsuleur" name="robot_node" type="robot.py" output="screen" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_decapsuleur_description)/urdf/rviz.rviz" required="true" />
 

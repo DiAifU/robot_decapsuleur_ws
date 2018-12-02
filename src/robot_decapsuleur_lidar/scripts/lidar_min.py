@@ -13,7 +13,7 @@ def get_lidar_data(laserscan):
 	# Remove a third in the back
 	length = len(ranges)
 	for (i, r) in enumerate(ranges):
-		if (i > 2*len(ranges)//5 and i < 4*len(ranges)//5) or ranges[i] < 0.3 or ranges[i] > 0.8:
+		if (i > len(ranges)//3 and i < 2*len(ranges)//3) or ranges[i] < 0.3 or ranges[i] > 0.6:
 			ranges[i] = np.inf
 
 
